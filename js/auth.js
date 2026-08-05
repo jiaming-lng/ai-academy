@@ -6,6 +6,7 @@
 
 import { logger } from './logger.js';
 import { dbSignUp, dbSignIn, dbSignOut, dbGetCurrentUser, dbOnAuthChange, dbResetPassword, dbUpdatePassword, dbSignInWithOAuth } from './db.js';
+import { identifyUser, clearUser } from './sentry.js';
 
 /**
  * 注册新用户
@@ -45,6 +46,8 @@ export async function login({ email, password }) {
   try {
     const data = await dbSignIn(email, password);
     const name = data.user?.user_metadata?.full_name || email;
+    // Sentry: 关联用户
+    identifyUser({ id: data.user?.id, email, name });
     logger.info('用户登录成功', { email, name });
     return { success: true, message: '欢迎回来，' + name + '！' };
   } catch (err) {
@@ -63,6 +66,7 @@ export async function login({ email, password }) {
  */
 export async function logout() {
   await dbSignOut();
+  clearUser();
   logger.info('用户已登出');
 }
 
@@ -81,6 +85,8 @@ export async function getCurrentUser() {
         name: user.profile?.full_name || user.user_metadata?.full_name || user.email,
         email: user.email,
       };
+      // Sentry: 恢复用户关联
+      identifyUser({ id: user.id, email: user.email, name: cachedUser.name });
       return cachedUser;
     }
     cachedUser = null;
