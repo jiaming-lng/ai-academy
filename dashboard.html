@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <title>学习仪表盘 — AI学社</title>
+  <meta name="description" content="查看你的学习进度、已报名课程和学习统计" />
+  <meta property="og:title" content="学习仪表盘 — AI学社" />
+  <meta property="og:description" content="查看你的学习进度、已报名课程和学习统计" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://aiacademy.example.com/og-image.png" />
+  <link rel="canonical" href="https://aiacademy.example.com/dashboard.html" />
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/forms.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body data-page="dashboard.html">
+  <!-- Skip Link -->
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <main id="main-content">
+    <!-- 仪表盘头部 -->
+    <section class="page-banner hero-sm">
+      <div class="container">
+        <div class="hero-content">
+          <span class="hero-badge">个人中心</span>
+          <h1 class="hero-headline">学习仪表盘</h1>
+          <p class="hero-sub">追踪你的学习历程，见证每一步成长</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 未登录提示（默认隐藏） -->
+    <section id="loginPrompt" style="display:none;" class="section">
+      <div class="container">
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <span data-icon="user" data-icon-color="#6B6B8A" data-icon-size="64"></span>
+          </div>
+          <h2>请先登录</h2>
+          <p class="text-muted">登录后查看你的学习仪表盘和个人数据</p>
+          <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;">
+            <button class="btn btn-primary" data-form="login">登录</button>
+            <button class="btn btn-outline" data-form="register">注册</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 仪表盘内容（登录后显示） -->
+    <div id="dashboardContent" style="display:none;">
+      <!-- 统计卡片 -->
+      <section class="section">
+        <div class="container">
+          <div class="stats-grid" id="statsGrid">
+            <!-- JS 动态填充 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 我的课程 -->
+      <section class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>我的课程 <span id="enrolledCount" style="font-weight:400;color:var(--color-text-muted);font-size:var(--fs-lg);"></span></h2>
+            <a href="courses.html" class="btn btn-outline btn-sm">浏览更多课程</a>
+          </div>
+          <div id="myCoursesGrid" class="courses-grid">
+            <!-- JS 动态填充 -->
+          </div>
+          <div id="myCoursesEmpty" class="empty-state" style="display:none;">
+            <div class="empty-state-icon">
+              <span data-icon="book-open" data-icon-color="#6B6B8A" data-icon-size="64"></span>
+            </div>
+            <h2>还没有报名任何课程</h2>
+            <p class="text-muted">去课程页面挑选一门你感兴趣的课程开始学习吧</p>
+            <a href="courses.html" class="btn btn-primary" style="margin-top:1rem;">浏览课程</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 学习日历 -->
+      <section class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>学习日历</h2>
+            <p>过去 30 天的学习记录</p>
+          </div>
+          <div class="calendar-grid" id="calendarGrid">
+            <!-- JS 动态填充 -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="/js/layout.js"></script>
+  <script type="module" src="/js/dashboard.js"></script>
+</body>
+</html>

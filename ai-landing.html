@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI学社 - 让每个人都能驾驭 AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS Variables (Design Tokens) ===== */
+    :root {
+      --color-bg:         #FFFFFF;
+      --color-text:       #1A1A2E;
+      --color-text-sub:   #6B6B8A;
+      --color-border:     #EBEEF5;
+      --color-accent-1:   #6B8AFF;  /* blue   */
+      --color-accent-2:   #FF6B9D;  /* pink   */
+      --color-accent-3:   #10B981;  /* green  */
+      --color-accent-4:   #FFCB47;  /* yellow */
+      --color-hero-from:  #FAF4FF;
+      --color-hero-to:    #F5F8FF;
+      --color-footer:     #1A1A2E;
+      --color-footer-sub: #9090A8;
+      --color-footer-div: #333355;
+
+      --max-width: 1280px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 24px;
+      --radius-pill: 50px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,.04);
+    }
+
+    /* ===== Reset ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: var(--color-text);
+      background: var(--color-bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ===== Utility ===== */
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 80px; }
+
+    /* ===== Header ===== */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 62px; padding: 0 80px;
+    }
+    .header-logo { font-size: 24px; font-weight: 700; color: var(--color-text); }
+    .header-nav { display: flex; gap: 40px; align-items: center; }
+    .header-nav a { font-size: 15px; color: var(--color-text-sub); transition: color .2s; }
+    .header-nav a:hover,
+    .header-nav a.active { color: var(--color-text); }
+    .header-cta {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 28px; border-radius: var(--radius-pill);
+      background: var(--color-accent-1); color: #fff;
+      font-size: 15px; font-weight: 600;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .header-cta:hover { transform: scale(1.03); box-shadow: 0 4px 16px rgba(107,138,255,.35); }
+
+    /* ===== Hero ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--color-hero-from), var(--color-hero-to));
+      overflow: hidden;
+    }
+    .hero .container {
+      display: flex; align-items: center; gap: 60px;
+      min-height: 600px; padding-top: 100px; padding-bottom: 100px;
+    }
+    .hero-content { flex: 1; display: flex; flex-direction: column; gap: 28px; }
+    .hero-badge {
+      display: inline-flex; align-self: flex-start;
+      padding: 8px 20px; border-radius: var(--radius-pill);
+      background: #FFE4F0; color: var(--color-accent-2);
+      font-size: 14px; font-weight: 600;
+    }
+    .hero-headline { font-size: 72px; font-weight: 700; line-height: 1.12; color: var(--color-text); }
+    .hero-sub { font-size: 18px; line-height: 1.6; color: var(--color-text-sub); max-width: 520px; }
+    .hero-actions { display: flex; gap: 16px; align-items: center; }
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 16px 36px; border-radius: var(--radius-pill);
+      background: var(--color-accent-1); color: #fff;
+      font-size: 16px; font-weight: 600; border: none; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(107,138,255,.4); }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 16px 36px; border-radius: var(--radius-pill);
+      background: #fff; color: var(--color-text);
+      font-size: 16px; font-weight: 600; border: 1px solid #D8DCE8; cursor: pointer;
+      transition: border-color .2s;
+    }
+    .btn-outline:hover { border-color: var(--color-accent-1); }
+
+    .hero-visual {
+      width: 480px; height: 400px; flex-shrink: 0;
+      border-radius: var(--radius-lg); background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 40px rgba(107,138,255,.08);
+    }
+    .hero-visual-inner {
+      text-align: center; color: var(--color-text-sub);
+    }
+    .hero-visual-inner .icon-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;
+    }
+    .hero-visual-inner .icon-box {
+      width: 72px; height: 72px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    }
+    .hero-visual-inner .icon-box svg { width: 36px; height: 36px; }
+
+    /* ===== Section ===== */
+    .section { padding: 100px 0; }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-header h2 { font-size: 40px; font-weight: 700; margin-bottom: 16px; }
+    .section-header p { font-size: 18px; color: var(--color-text-sub); }
+
+    /* ===== Feature Blocks (alternating) ===== */
+    .feature-block {
+      display: flex; align-items: center; gap: 80px;
+      margin-bottom: 80px;
+    }
+    .feature-block:last-child { margin-bottom: 0; }
+    .feature-block.reverse { flex-direction: row-reverse; }
+    .feature-image {
+      width: 520px; height: 340px; flex-shrink: 0;
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--color-text-sub);
+    }
+    .feature-image.bg-blue   { background: #F0F3FF; }
+    .feature-image.bg-pink   { background: #FFF0F5; }
+    .feature-image.bg-yellow { background: #FFF8F0; }
+    .feature-content { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    .feature-tag { font-size: 13px; font-weight: 600; letter-spacing: .5px; }
+    .feature-tag.blue  { color: var(--color-accent-1); }
+    .feature-tag.pink  { color: var(--color-accent-2); }
+    .feature-tag.green { color: var(--color-accent-3); }
+    .feature-content h3 { font-size: 32px; font-weight: 700; }
+    .feature-content p { font-size: 16px; line-height: 1.6; color: var(--color-text-sub); }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .feature-list li { font-size: 15px; }
+    .feature-list li::before { content: '✓ '; margin-right: 6px; }
+
+    /* ===== Features Grid ==== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); padding: 32px;
+      display: flex; flex-direction: column; gap: 16px;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+    .feature-card .card-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .feature-card .card-icon svg { width: 24px; height: 24px; }
+    .feature-card h4 { font-size: 20px; font-weight: 700; }
+    .feature-card p { font-size: 15px; line-height: 1.5; color: var(--color-text-sub); }
+
+    /* ===== Stats ===== */
+    .stats-row {
+      display: flex; justify-content: space-between;
+      margin-bottom: 60px;
+    }
+    .stat-item { text-align: center; }
+    .stat-number { font-size: 48px; font-weight: 700; }
+    .stat-number.blue   { color: var(--color-accent-1); }
+    .stat-number.pink   { color: var(--color-accent-2); }
+    .stat-number.green  { color: var(--color-accent-3); }
+    .stat-number.yellow { color: var(--color-accent-4); }
+    .stat-label { font-size: 16px; color: var(--color-text-sub); margin-top: 8px; }
+
+    /* ===== Testimonials ===== */
+    .t-section-header { text-align: center; margin-bottom: 40px; }
+    .t-section-header h3 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+    .t-section-header p { font-size: 18px; color: var(--color-text-sub); }
+    .testimonial-cards { display: flex; gap: 24px; }
+    .testimonial-card {
+      flex: 1; background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); padding: 32px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .testimonial-card .quote { font-size: 15px; line-height: 1.65; }
+    .testimonial-card .author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-card .avatar { width: 44px; height: 44px; border-radius: 50%; }
+    .testimonial-card .author-info .name { font-size: 15px; font-weight: 600; }
+    .testimonial-card .author-info .role { font-size: 13px; color: var(--color-text-sub); }
+
+    /* ===== Footer ===== */
+    .footer {
+      background: var(--color-footer); color: #fff;
+      padding: 60px 0 30px;
+    }
+    .footer-top {
+      display: flex; gap: 80px; margin-bottom: 48px;
+    }
+    .footer-brand { width: 300px; }
+    .footer-brand .logo { font-size: 24px; font-weight: 700; margin-bottom: 16px; }
+    .footer-brand .tagline { font-size: 14px; line-height: 1.6; color: var(--color-footer-sub); }
+    .footer-col { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    .footer-col .col-title { font-size: 15px; font-weight: 600; }
+    .footer-col a { font-size: 14px; color: var(--color-footer-sub); transition: color .2s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-divider { height: 1px; background: var(--color-footer-div); margin-bottom: 30px; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .footer-bottom .copyright { font-size: 13px; color: var(--color-footer-sub); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 13px; color: var(--color-footer-sub); transition: color .2s; }
+    .footer-legal a:hover { color: #fff; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px) {
+      .container { padding: 0 24px; }
+      .header .container { padding: 0 24px; }
+      .hero .container { flex-direction: column; text-align: center; gap: 40px; padding: 60px 24px; min-height: auto; }
+      .hero-headline { font-size: 40px; }
+      .hero-sub { max-width: 100%; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { width: 100%; max-width: 400px; height: 300px; }
+      .hero-badge { align-self: center; }
+      .hero-content { align-items: center; }
+      .feature-block, .feature-block.reverse { flex-direction: column; text-align: center; gap: 40px; }
+      .feature-image { width: 100%; max-width: 520px; }
+      .feature-content { align-items: center; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .stats-row { flex-wrap: wrap; gap: 40px; justify-content: center; }
+      .testimonial-cards { flex-direction: column; }
+      .footer-top { flex-wrap: wrap; gap: 40px; }
+      .footer-brand { width: 100%; }
+    }
+    @media (max-width: 640px) {
+      .header-nav { display: none; }
+      .hero-headline { font-size: 32px; }
+      .hero-visual { height: 200px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="container">
+      <a href="#" class="header-logo">AI学社</a>
+      <nav class="header-nav">
+        <a href="#" class="active">首页</a>
+        <a href="#">课程</a>
+        <a href="#">AI 工具</a>
+        <a href="#">社区</a>
+      </nav>
+      <a href="#" class="header-cta">免费开始</a>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="hero-badge">AI 时代必备技能</span>
+        <h1 class="hero-headline">让每个人都能<br>驾驭 AI</h1>
+        <p class="hero-sub">从零基础到 AI 实战，系统化课程 + 动手实验室，<br>帮你掌握未来十年最重要的技能</p>
+        <div class="hero-actions">
+          <button class="btn-primary">开始学习</button>
+          <button class="btn-outline">浏览课程</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-visual-inner">
+          <div class="icon-grid">
+            <div class="icon-box" style="background:#F0F3FF">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#6B8AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="icon-box" style="background:#FFF0F5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="icon-box" style="background:#FFF8F0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FFCB47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <div class="icon-box" style="background:#F0FFF4">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+          </div>
+          <p>AI 学习仪表盘</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 核心功能 ===== -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>系统化学习路径</h2>
+        <p>从入门到精通，三大核心模块助你全面掌握 AI</p>
+      </div>
+
+      <!-- Feature 1 -->
+      <div class="feature-block">
+        <div class="feature-image bg-blue">基础入门课程</div>
+        <div class="feature-content">
+          <span class="feature-tag blue">模块一</span>
+          <h3>AI 基础入门</h3>
+          <p>从机器学习基本概念到神经网络原理，用通俗易懂的方式帮你建立 AI 知识体系。无需数学基础，人人都能学会。</p>
+          <ul class="feature-list">
+            <li>机器学习核心概念</li>
+            <li>深度学习与神经网络</li>
+            <li>自然语言处理入门</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Feature 2 (reverse) -->
+      <div class="feature-block reverse">
+        <div class="feature-image bg-pink">交互式实验室</div>
+        <div class="feature-content">
+          <span class="feature-tag pink">模块二</span>
+          <h3>动手实战实验室</h3>
+          <p>在浏览器中直接运行 AI 模型，通过交互式实验理解 Prompt Engineering、模型微调等核心技术。边学边练，真正掌握。</p>
+          <ul class="feature-list">
+            <li>Prompt Engineering 实战</li>
+            <li>模型微调与部署</li>
+            <li>RAG 知识库搭建</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-block">
+        <div class="feature-image bg-yellow">项目作品集</div>
+        <div class="feature-content">
+          <span class="feature-tag green">模块三</span>
+          <h3>项目实战与作品集</h3>
+          <p>从零构建真实 AI 应用——智能客服、图片生成、数据分析工具……每个项目都能成为你简历上的亮点。</p>
+          <ul class="feature-list">
+            <li>AI 聊天机器人开发</li>
+            <li>AI 图片生成应用</li>
+            <li>数据分析与可视化</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 特性网格 ===== -->
+  <section class="section" style="background:#FAFBFF;">
+    <div class="container">
+      <div class="section-header">
+        <h2>为什么选择 AI 学社</h2>
+        <p>六大优势，让你的 AI 学习之路事半功倍</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="card-icon" style="background:#F0F3FF">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6B8AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="12" y1="6" x2="12" y2="6"/></svg>
+          </div>
+          <h4>系统化课程体系</h4>
+          <p>从基础到进阶的完整学习路径，循序渐进掌握 AI 核心技能</p>
+        </div>
+        <div class="feature-card">
+          <div class="card-icon" style="background:#FFF0F5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h4>在线动手实验</h4>
+          <p>无需配置环境，浏览器内直接运行 AI 模型，实时看到效果</p>
+        </div>
+        <div class="feature-card">
+          <div class="card-icon" style="background:#FFF8F0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FFCB47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <h4>项目驱动教学</h4>
+          <p>每个模块配套真实项目，学完即可产出可展示的作品集</p>
+        </div>
+        <div class="feature-card">
+          <div class="card-icon" style="background:#F0FFF4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h4>活跃学习社区</h4>
+          <p>与全球学习者交流讨论，导师在线答疑，学习不再孤单</p>
+        </div>
+        <div class="feature-card">
+          <div class="card-icon" style="background:#F0F0FF">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h4>前沿内容更新</h4>
+          <p>紧跟 GPT-5、Claude 等最新进展，第一时间解读前沿技术动态</p>
+        </div>
+        <div class="feature-card">
+          <div class="card-icon" style="background:#FFF5F0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          </div>
+          <h4>结业证书认证</h4>
+          <p>完成课程获得官方认证证书，为职业发展增添有力背书</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 数据证明 ===== -->
+  <section class="section">
+    <div class="container">
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-number blue">50,000+</div>
+          <div class="stat-label">注册学员</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number pink">200+</div>
+          <div class="stat-label">精品课程</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number green">95%</div>
+          <div class="stat-label">学员满意度</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number yellow">30+</div>
+          <div class="stat-label">合作企业</div>
+        </div>
+      </div>
+
+      <div class="t-section-header">
+        <h3>学员反馈</h3>
+        <p>听听他们怎么说</p>
+      </div>
+      <div class="testimonial-cards">
+        <div class="testimonial-card">
+          <p class="quote">"作为前端开发者，AI学社帮我快速上手了大模型应用开发。课程体系清晰，实战项目很有价值。"</p>
+          <div class="author">
+            <div class="avatar" style="background:#F0F3FF"></div>
+            <div class="author-info">
+              <div class="name">张明</div>
+              <div class="role">前端开发工程师</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="quote">"零基础开始学的，三个月就能独立搭建一个AI聊天应用了。社区氛围很好，遇到问题有人帮忙。"</p>
+          <div class="author">
+            <div class="avatar" style="background:#FFF0F5"></div>
+            <div class="author-info">
+              <div class="name">李婷</div>
+              <div class="role">在校大学生</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="quote">"课程内容紧跟前沿，讲师对 GPT-5、Claude 的解读非常透彻，帮我节省了大量自学试错的时间。"</p>
+          <div class="author">
+            <div class="avatar" style="background:#FFF8F0"></div>
+            <div class="author-info">
+              <div class="name">王磊</div>
+              <div class="role">产品经理</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo">AI学社</div>
+          <p class="tagline">让每个人都能驾驭 AI<br>系统化的 AI 学习平台</p>
+        </div>
+        <div class="footer-col">
+          <div class="col-title">课程</div>
+          <a href="#">基础入门</a>
+          <a href="#">实战实验室</a>
+          <a href="#">项目实战</a>
+        </div>
+        <div class="footer-col">
+          <div class="col-title">资源</div>
+          <a href="#">文档中心</a>
+          <a href="#">API 参考</a>
+          <a href="#">博客</a>
+        </div>
+        <div class="footer-col">
+          <div class="col-title">关于</div>
+          <a href="#">关于我们</a>
+          <a href="#">加入社区</a>
+          <a href="#">联系我们</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <span class="copyright">&copy; 2026 AI学社. All rights reserved.</span>
+        <div class="footer-legal">
+          <a href="#">隐私政策</a>
+          <a href="#">服务条款</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

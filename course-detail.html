@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <title>课程详情 - AI学社</title>
+  <meta name="description" content="AI学社系统化课程详情——查看课程大纲、讲师介绍，立即报名学习。">
+  <meta property="og:title" content="课程详情 - AI学社">
+  <meta property="og:description" content="查看课程大纲、讲师介绍，立即报名学习">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://aiacademy.example.com/og-image.png">
+  <meta property="og:url" content="https://aiacademy.example.com/course-detail.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://aiacademy.example.com/course-detail.html">
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/forms.css">
+</head>
+<body data-page="courses.html" data-cta-text="立即报名" data-cta-href="#enroll">
+
+  <main id="main-content" tabindex="-1">
+
+    <!-- ===== Course Header (JS 动态渲染) ===== -->
+    <section class="section" style="padding-bottom:0;" id="courseDetailHeader">
+      <div class="container">
+        <div class="course-detail-header reveal" style="min-height:280px;">
+          <!-- 骨架屏加载中 -->
+          <div class="skeleton-detail" style="flex:1;"></div>
+          <div class="skeleton-detail" style="flex:1;height:240px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Course Syllabus (JS 动态渲染) ===== -->
+    <section class="section" style="padding-top:var(--space-12);" id="courseSyllabus">
+      <div class="container">
+        <div class="course-syllabus reveal" style="min-height:200px;">
+          <h2>课程大纲</h2>
+          <div class="skeleton-detail" style="height:60px;"></div>
+          <div class="skeleton-detail" style="height:60px;"></div>
+          <div class="skeleton-detail" style="height:60px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Instructor (JS 动态渲染) ===== -->
+    <section class="section bg-soft" id="courseInstructor">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>主讲讲师</h2>
+          <p>来自一线科技公司的 AI 实战专家</p>
+        </div>
+        <div class="skeleton-detail reveal" style="height:140px;"></div>
+      </div>
+    </section>
+
+    <!-- ===== Enroll CTA (JS 动态渲染) ===== -->
+    <section class="section" id="courseEnroll">
+      <div class="container">
+        <div class="skeleton-detail reveal" style="height:200px;"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="js/icons.js"></script>
+  <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/toast.js"></script>
+  <script type="module" src="js/forms.js"></script>
+  <script type="module" src="js/seo.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module">
+    import { initCourseDetailPage } from './js/course-detail.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initCourseDetailPage();
+    });
+  </script>
+</body>
+</html>
