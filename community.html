@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <title>学习社区 - AI学社</title>
+  <meta name="description" content="加入AI学社学习社区，与全球AI学习者交流讨论、分享项目、获取导师答疑。">
+  <meta property="og:title" content="学习社区 - AI学社">
+  <meta property="og:description" content="与全球50,000+AI学习者交流讨论、分享项目、获取导师答疑">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://aiacademy.example.com/og-image.png">
+  <meta property="og:url" content="https://aiacademy.example.com/community.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://aiacademy.example.com/community.html">
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/forms.css">
+</head>
+<body data-page="community.html" data-cta-text="加入社区" data-cta-href="about.html">
+
+  <main id="main-content" tabindex="-1">
+
+    <!-- ===== Page Banner ===== -->
+    <section class="page-banner reveal">
+      <div class="container">
+        <h1>AI 学习者社区</h1>
+        <p>与全球 50,000+ 学员一起学习、交流、成长</p>
+      </div>
+    </section>
+
+    <!-- ===== Stats ===== -->
+    <section style="padding-bottom:0;">
+      <div class="container">
+        <div class="stats-row reveal">
+          <div class="stat-item">
+            <div class="stat-number blue" data-target="50000" data-suffix="+">50,000+</div>
+            <div class="stat-label">社区成员</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number pink" data-target="12000" data-suffix="+">12,000+</div>
+            <div class="stat-label">讨论话题</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number green" data-target="3500" data-suffix="+">3,500+</div>
+            <div class="stat-label">开源项目</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number yellow" data-target="98" data-suffix="%">98%</div>
+            <div class="stat-label">问题解决率</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Dynamic Community Section ===== -->
+    <section class="section">
+      <div class="container">
+        <div class="community-toolbar">
+          <div class="community-tag-bar" id="communityTagBar">
+            <!-- JS rendered -->
+          </div>
+          <button class="btn-primary" id="btnNewPost">
+            <span data-icon="plus" style="width:16px;height:16px;margin-right:6px;"></span>
+            发布帖子
+          </button>
+        </div>
+
+        <div class="community-post-list" id="communityPostList">
+          <!-- JS rendered: skeleton loading → posts -->
+        </div>
+
+        <div class="community-pagination" id="communityPagination">
+          <!-- JS rendered: pagination -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== New Post Modal ===== -->
+  <div class="modal-overlay" id="newPostModal" aria-hidden="true" role="dialog" aria-label="发布帖子">
+    <div class="modal-container" role="document">
+      <div class="modal-header">
+        <h3>发布帖子</h3>
+        <button class="modal-close" id="closeNewPostModal" aria-label="关闭">
+          <span data-icon="x" style="width:20px;height:20px;"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- JS rendered: form -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Post Detail Modal ===== -->
+  <div class="modal-overlay" id="postDetailModal" aria-hidden="true" role="dialog" aria-label="帖子详情">
+    <div class="modal-container modal-lg" role="document">
+      <div class="modal-header">
+        <h3>帖子详情</h3>
+        <button class="modal-close" id="closePostDetailModal" aria-label="关闭">
+          <span data-icon="x" style="width:20px;height:20px;"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- JS rendered: post detail + comments -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/icons.js"></script>
+  <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/toast.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/db.js"></script>
+  <script type="module" src="js/forms.js"></script>
+  <script type="module" src="js/seo.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module">
+    import { initCommunity } from './js/community.js';
+    document.addEventListener('DOMContentLoaded', initCommunity);
+  </script>
+</body>
+</html>

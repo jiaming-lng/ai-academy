@@ -1,0 +1,27 @@
+{
+  "name": "ai-academy",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "AI学社 - 系统化 AI 学习平台前端站点",
+  "scripts": {
+    "dev": "vite",
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint js/ vite.config.js",
+    "format": "prettier --write \"js/**/*.js\" \"*.{json,html,css,js}\""
+  },
+  "devDependencies": {
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.6",
+    "prettier": "^3.3.3",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.2"
+  }
+}

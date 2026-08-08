@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <title>课程学习 — AI学社</title>
+  <meta name="description" content="AI学社在线课程学习页面" />
+  <meta property="og:title" content="课程学习 — AI学社" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://aiacademy.example.com/og-image.png" />
+  <link rel="canonical" href="https://aiacademy.example.com/lesson.html" />
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/forms.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body data-page="lesson.html">
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <main id="main-content">
+    <!-- 课程头部 -->
+    <section class="page-banner hero-sm">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="面包屑导航">
+          <a href="index.html">首页</a><span class="breadcrumb-sep">/</span>
+          <a href="courses.html">课程</a><span class="breadcrumb-sep">/</span>
+          <a href="#" id="breadCourse">课程详情</a><span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current" id="breadLesson">学习中</span>
+        </nav>
+      </div>
+    </section>
+
+    <!-- 学习区域 -->
+    <section class="section">
+      <div class="container lesson-layout">
+        <!-- 左侧：视频播放器 -->
+        <div class="lesson-main">
+          <div class="lesson-video-wrap">
+            <div class="lesson-video" id="videoPlayer">
+              <div class="lesson-video-placeholder">
+                <span data-icon="play-circle" data-icon-color="#fff" data-icon-size="64"></span>
+                <p id="videoTitle" style="margin-top:1rem;color:#fff;font-size:var(--fs-xl);"></p>
+              </div>
+            </div>
+          </div>
+          <!-- 课时信息 -->
+          <div class="lesson-info">
+            <h1 id="lessonTitle"></h1>
+            <div class="lesson-meta">
+              <span id="lessonDuration"></span>
+              <span id="lessonType"></span>
+            </div>
+            <div class="lesson-actions">
+              <button class="btn btn-primary" id="btnComplete">
+                <span data-icon="check-circle" data-icon-color="currentColor" data-icon-size="18"></span>
+                标记完成
+              </button>
+              <button class="btn btn-outline" id="btnPrev" disabled>
+                <span data-icon="arrow-left" data-icon-color="currentColor" data-icon-size="18"></span>
+                上一节
+              </button>
+              <button class="btn btn-outline" id="btnNext">
+                下一节
+                <span data-icon="arrow-right" data-icon-color="currentColor" data-icon-size="18"></span>
+              </button>
+            </div>
+          </div>
+          <!-- 课程内容 -->
+          <div class="lesson-content" id="lessonContent">
+            <div class="skeleton-line w-full" style="height:20px;"></div>
+            <div class="skeleton-line w-80" style="height:20px;"></div>
+            <div class="skeleton-line w-60" style="height:20px;"></div>
+          </div>
+          <!-- 笔记区 -->
+          <div class="lesson-notes" id="notesSection">
+            <h3>学习笔记</h3>
+            <textarea id="noteInput" placeholder="记录你的学习心得..."></textarea>
+            <button class="btn btn-outline btn-sm" id="btnSaveNote">保存笔记</button>
+            <div id="savedNotes"></div>
+          </div>
+        </div>
+
+        <!-- 右侧：章节导航 -->
+        <aside class="lesson-sidebar">
+          <div class="lesson-chapters">
+            <h3>课程目录</h3>
+            <div id="chapterList">
+              <!-- JS 动态填充 -->
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/layout.js"></script>
+  <script type="module" src="/js/lesson.js"></script>
+</body>
+</html>
