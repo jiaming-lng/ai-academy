@@ -40,11 +40,18 @@ export const logger = {
   error(...args) {
     if (currentLevel() <= LEVELS.error) console.error('[AI学社]', ...format(args));
   },
-  // 生产环境错误上报（占位）
+  // 生产环境错误上报 → Sentry
   report(error) {
-    if (currentLevel() > LEVELS.error) return;
-    // TODO: 发送到监控端点，如 Sentry / 自建收集服务
-    void error;
+    // 开发环境不发送
+    if (currentLevel() <= LEVELS.warn) return;
+    try {
+      // 动态导入，避免 sentry 模块加载失败阻塞 logger
+      import('./sentry.js').then(({ reportError }) => {
+        reportError(error, { source: 'logger.report' });
+      });
+    } catch {
+      // sentry 未就绪时静默降级
+    }
   },
 };
 

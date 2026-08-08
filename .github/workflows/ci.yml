@@ -41,24 +41,3 @@ jobs:
           name: ai-academy-dist
           path: dist/
           retention-days: 7
-
-  deploy-preview:
-    name: Deploy Preview (EdgeOne Pages)
-    if: github.event_name == 'push'
-    needs: quality
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Download dist artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ai-academy-dist
-          path: dist/
-
-      - name: Deploy to EdgeOne Pages
-        uses: TencentEdgeOne/edgeone-pages-action@v1
-        with:
-          token: ${{ secrets.EDGEONE_TOKEN }}
-          project: ai-academy
-          directory: dist/
-          auto-release: preview

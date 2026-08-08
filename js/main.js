@@ -10,6 +10,24 @@ import { openForm } from './forms.js';
 import { showToast } from './toast.js';
 import { initHeroParticles } from './hero-particles.js';
 
+// Sentry 可选：未安装 @sentry/browser 时静默降级
+let reportError = () => {};
+let setGlobalTag = () => {};
+// 异步加载 sentry，不阻塞页面渲染
+import('./sentry.js')
+  .then((sentry) => {
+    reportError = sentry.reportError;
+    setGlobalTag = sentry.setGlobalTag;
+    // 加载成功后立即标记当前页面
+    try {
+      const pagePath = location.pathname.replace(/\/$/, '') || '/';
+      setGlobalTag('page', pagePath);
+    } catch { /* noop */ }
+  })
+  .catch(() => {
+    // sentry 不可用，静默降级
+  });
+
 // ===== 全局错误兜底 =====
 function showErrorBanner(message) {
   let banner = document.getElementById('global-error-banner');
@@ -29,11 +47,13 @@ function showErrorBanner(message) {
 
 window.addEventListener('error', (e) => {
   logger.error('全局运行时错误:', e.message, e.error);
+  reportError(e.error || e.message, { type: 'runtime', filename: e.filename, lineno: e.lineno });
   showErrorBanner('页面出现了一点问题，但核心内容仍可浏览。');
 });
 
 window.addEventListener('unhandledrejection', (e) => {
   logger.error('未捕获的 Promise 异常:', e.reason);
+  reportError(e.reason || 'Unhandled Promise Rejection', { type: 'unhandledrejection' });
   showErrorBanner('检测到异步错误，部分功能可能受限。');
 });
 

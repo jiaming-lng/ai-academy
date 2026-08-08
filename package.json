@@ -13,6 +13,10 @@
     "lint": "eslint js/ vite.config.js",
     "format": "prettier --write \"js/**/*.js\" \"*.{json,html,css,js}\""
   },
+  "dependencies": {
+    "@sentry/browser": "^8.0.0",
+    "@supabase/supabase-js": "^2.112.2"
+  },
   "devDependencies": {
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
@@ -20,8 +24,5 @@
     "prettier": "^3.3.3",
     "vite": "^5.4.10",
     "vitest": "^2.1.8"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.112.2"
   }
 }
