@@ -2,13 +2,48 @@
 // course-detail.js — 课程详情页动态渲染 (Phase 4)
 // 读取 URL ?id= → 查找课程 → 渲染页面
 // 无 id / 找不到 → 跳转 404
-// 依赖: courses.data.js, icons.js, logger.js
+// 依赖: db.js (Supabase/localStorage), icons.js, logger.js
 // ============================================================
 
-import { getCourseById } from './config/courses.data.js';
+import { dbGetCourse } from './db.js';
 import { Icons } from './icons.js';
 import { logger } from './logger.js';
 import { escapeHtml, formatNumber } from './utils.js';
+
+/**
+ * 将数据库/硬编码字段统一映射为前端渲染所需字段
+ */
+function normalizeCourse(c) {
+  if (!c) return null;
+  const level = c.level || c.difficulty || 'beginner';
+  const difficultyLabel = (() => {
+    if (level === 'beginner') return '入门';
+    if (level === 'intermediate') return '进阶';
+    if (level === 'advanced') return '高级';
+    return c.difficultyLabel || level;
+  })();
+  return {
+    id: c.id,
+    title: c.title || '',
+    subtitle: c.subtitle || '',
+    description: c.description || '',
+    summary: c.summary || c.subtitle || (c.description || '').slice(0, 80),
+    difficulty: level,
+    difficultyLabel,
+    weeks: c.weeks || Math.ceil((c.duration_hours || 24) / 3),
+    lessons: c.lessons || c.lessons_count || 0,
+    enrolled: c.enrolled || c.students_count || 0,
+    rating: c.rating || 0,
+    price: c.price || 0,
+    originalPrice: c.originalPrice || c.original_price || c.price || 0,
+    icon: c.icon || 'book',
+    iconColor: c.icon_color || c.iconColor || '#6B8AFF',
+    gradientFrom: c.gradientFrom || c.gradient_from || 'var(--color-primary-soft)',
+    gradientTo: c.gradientTo || c.gradient_to || '#E8EEFF',
+    syllabus: c.syllabus || c.outline || [],
+    instructor: c.instructor || null,
+  };
+}
 
 /**
  * 渲染课程详情头部
@@ -108,7 +143,7 @@ function updatePageMeta(course) {
 /**
  * 主渲染函数
  */
-export function initCourseDetailPage() {
+export async function initCourseDetailPage() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
@@ -118,7 +153,8 @@ export function initCourseDetailPage() {
     return;
   }
 
-  const course = getCourseById(id);
+  const rawCourse = await dbGetCourse(id);
+  const course = normalizeCourse(rawCourse);
   if (!course) {
     logger.error('未找到课程', { id });
     window.location.replace('404.html');
