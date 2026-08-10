@@ -34,6 +34,12 @@ export async function getSupabase() {
       },
     });
     console.log('[Supabase] 已连接');
+    // 调试：测试第一个查询
+    supabase.from('courses').select('id', { count: 'exact', head: true }).limit(1)
+      .then(({ data, error }) => {
+        if (error) console.error('[Supabase] 测试查询失败:', error);
+        else console.log('[Supabase] 测试查询成功，行数:', data);
+      }).catch(err => console.error('[Supabase] 测试查询异常:', err));
     return supabase;
   } catch (err) {
     console.warn('[Supabase] 创建客户端失败:', err.message);
