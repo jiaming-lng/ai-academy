@@ -11,6 +11,21 @@ const _fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || _fallbackUrl;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || _fallbackKey;
 
+// 清理可能被污染的 session token
+try {
+  const keys = Object.keys(localStorage);
+  for (const k of keys) {
+    if (k.startsWith('sb-') || k.includes('supabase')) {
+      const val = localStorage.getItem(k);
+      // 检查是否含有非 ASCII 字符
+      if (val && /[^\x00-\x7F]/.test(val)) {
+        console.warn('[Supabase] 清理被污染的 localStorage key:', k);
+        localStorage.removeItem(k);
+      }
+    }
+  }
+} catch { /* noop */ }
+
 let supabase = null;
 
 /**

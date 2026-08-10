@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Supabase Fetch Test</title></head>
+<body>
+<h1>Supabase Fetch Test</h1>
+<pre id="result">Running...</pre>
+<script>
+(async function() {
+  const result = document.getElementById('result');
+  const url = 'https://baoanljnpmorqsucqxud.supabase.co/rest/v1/courses?status=eq.published&order=sort_order&select=id,title';
+  const apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhb2FubGpucG1vcnFzdWNxeHVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MzM0MzksImV4cCI6MjEwMTQwOTQzOX0.f_zpPTcBVZHnPTmXgmWFl3aZswjYJOK9uCTsePKWjs0';
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'apikey': apikey,
+        'Authorization': 'Bearer ' + apikey,
+      },
+    });
+    result.textContent = 'Status: ' + res.status + ' OK\nData:\n' + JSON.stringify(await res.json(), null, 2);
+  } catch (err) {
+    result.textContent = 'ERROR: ' + err.message + '\n' + err.stack;
+  }
+})();
+</script>
+</body>
+</html>
