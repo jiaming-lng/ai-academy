@@ -1,104 +1,89 @@
-/**
- * Supabase 客户端模块
- * 使用 Vite 环境变量 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY
- * 本地开发时创建 .env 文件，部署时在平台配置环境变量
- */
+// ============================================================
+// supabase.js — 纯 REST API 客户端（不依赖 @supabase/supabase-js）
+// 直接用 fetch 调用 PostgREST，避免 SDK 的复杂行为
+// ============================================================
 
-// fallback hardcoded values for production deployment
-const _fallbackUrl = 'https://baoanljnpmorqsucqxud.supabase.co';
-const _fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhb2FubGpucG1vcnFzdWNxeHVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MzM0MzksImV4cCI6MjEwMTQwOTQzOX0.f_zpPTcBVZHnPTmXgmWFl3aZswjYJOK9uCTsePKWjs0';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://baoanljnpmorqsucqxud.supabase.co';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhb2FubGpucG1vcnFzdWNxeHVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MzM0MzksImV4cCI6MjEwMTQwOTQzOX0.f_zpPTcBVZHnPTmXgmWFl3aZswjYJOK9uCTsePKWjs0';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || _fallbackUrl;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || _fallbackKey;
-
-// 清理可能被污染的 session token
-try {
-  const keys = Object.keys(localStorage);
-  for (const k of keys) {
-    if (k.startsWith('sb-') || k.includes('supabase')) {
-      const val = localStorage.getItem(k);
-      // 检查是否含有非 ASCII 字符
-      if (val && /[^\x00-\x7F]/.test(val)) {
-        console.warn('[Supabase] 清理被污染的 localStorage key:', k);
-        localStorage.removeItem(k);
-      }
-    }
-  }
-} catch { /* noop */ }
-
-let supabase = null;
+// 通用 headers（纯 ASCII，永不报错）
+const baseHeaders = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': 'Bearer ' + SUPABASE_KEY,
+  'Content-Type': 'application/json',
+};
 
 /**
- * 获取配置（用于直接 REST API 调用）
+ * GET 请求辅助函数
  */
-export function getConfig() {
-  return { url: supabaseUrl, key: supabaseAnonKey };
-}
-
-/**
- * 直接 REST API 查询 courses 表（绕过 SDK，避免 Header 报错问题）
- */
-export async function fetchCoursesREST() {
+async function supabaseGet(table, query = '') {
+  const url = SUPABASE_URL + '/rest/v1/' + table + (query ? '?' + query : '');
   try {
-    const url = `${supabaseUrl}/rest/v1/courses?status=eq.published&order=sort_order&select=*`;
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
-      },
-    });
+    const res = await fetch(url, { method: 'GET', headers: baseHeaders });
     if (!res.ok) {
-      console.error('[REST] courses 查询失败:', res.status, res.statusText);
+      console.error('[Supabase GET]', table, 'failed:', res.status);
       return null;
     }
-    const data = await res.json();
-    console.log('[REST] courses 查询成功:', data.length, '门课程');
-    return data;
+    return await res.json();
   } catch (err) {
-    console.error('[REST] courses 查询异常:', err.message);
+    console.error('[Supabase GET]', table, 'error:', err.message);
     return null;
   }
 }
 
 /**
- * 获取 Supabase 客户端实例（单例）
+ * 获取已发布的课程列表
  */
-export async function getSupabase() {
-  if (supabase) return supabase;
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('[Supabase] 环境变量未配置，使用离线模式');
-    return null;
-  }
+export async function fetchCoursesREST() {
+  const query = 'status=eq.published&order=sort_order&select=*';
+  const data = await supabaseGet('courses', query);
+  if (data) console.log('[REST] courses:', data.length);
+  return data;
+}
+
+/**
+ * 获取单个课程
+ */
+export async function fetchCourseREST(id) {
+  const data = await supabaseGet('courses', 'id=eq.' + encodeURIComponent(id) + '&select=*');
+  return data && data[0] ? data[0] : null;
+}
+
+/**
+ * 获取某课程的所有课时
+ */
+export async function fetchLessonsREST(courseId) {
+  const query = 'course_id=eq.' + encodeURIComponent(courseId) + '&order=sort_order&select=*';
+  return await supabaseGet('lessons', query);
+}
+
+/**
+ * 获取当前用户 profile（通过 auth.getUser）
+ */
+export async function fetchCurrentUserREST() {
   try {
-    // 静态导入 SDK（修复运行时找不到模块的问题）
-    const { createClient } = await import('@supabase/supabase-js');
-    supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
+    // 从 localStorage 取 session
+    const sessionRaw = localStorage.getItem('sb-baoanljnpmorqsucqxud-auth-token');
+    if (!sessionRaw) return null;
+    const session = JSON.parse(sessionRaw);
+    if (!session.access_token) return null;
+
+    const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + session.access_token,
       },
     });
-    console.log('[Supabase] 已连接');
-    return supabase;
-  } catch (err) {
-    console.warn('[Supabase] 创建客户端失败:', err.message);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
     return null;
   }
 }
 
-/**
- * 同步获取已初始化的 supabase 实例
- * 用于需要同步调用的场景（注意：仅返回已初始化实例，不触发动态加载）
- */
-export function getSupabaseSync() {
-  return supabase;
-}
-
-/**
- * 检查 Supabase 是否已配置
- */
-export function isSupabaseReady() {
-  return !!(supabaseUrl && supabaseAnonKey);
-}
+// 旧 API 兼容（已废弃）
+export async function getSupabase() { return null; }
+export function getSupabaseSync() { return null; }
+export function isSupabaseReady() { return !!SUPABASE_URL; }
+export function getConfig() { return { url: SUPABASE_URL, key: SUPABASE_KEY }; }

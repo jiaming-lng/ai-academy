@@ -147,6 +147,11 @@ export async function dbGetCourses() {
   const { fetchCoursesREST } = await import('./supabase.js');
   const rest = await fetchCoursesREST();
   if (rest && rest.length > 0) return rest;
+  if (rest === null) {
+    // REST 失败（不是空数据），尝试本地数据
+    const mod = await import('./config/courses.data.js');
+    return mod.courses;
+  }
   // 降级到 SDK
   const sb = await getSupabase();
   if (sb) {
@@ -160,12 +165,9 @@ export async function dbGetCourses() {
 }
 
 export async function dbGetCourse(id) {
-  const sb = await getSupabase();
-  if (sb) {
-    const { data, error } = await sb.from('courses').select('*').eq('id', id).single();
-    if (error) throw error;
-    return data;
-  }
+  const { fetchCourseREST } = await import('./supabase.js');
+  const rest = await fetchCourseREST(id);
+  if (rest) return rest;
   const mod = await import('./config/courses.data.js');
   return mod.courses.find(c => c.id === id) || null;
 }
