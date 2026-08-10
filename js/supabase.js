@@ -11,10 +11,40 @@ const _fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || _fallbackUrl;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || _fallbackKey;
 
-// 静态导入 SDK（修复运行时找不到模块的问题）
-import { createClient } from '@supabase/supabase-js';
-
 let supabase = null;
+
+/**
+ * 获取配置（用于直接 REST API 调用）
+ */
+export function getConfig() {
+  return { url: supabaseUrl, key: supabaseAnonKey };
+}
+
+/**
+ * 直接 REST API 查询 courses 表（绕过 SDK，避免 Header 报错问题）
+ */
+export async function fetchCoursesREST() {
+  try {
+    const url = `${supabaseUrl}/rest/v1/courses?status=eq.published&order=sort_order&select=*`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+      },
+    });
+    if (!res.ok) {
+      console.error('[REST] courses 查询失败:', res.status, res.statusText);
+      return null;
+    }
+    const data = await res.json();
+    console.log('[REST] courses 查询成功:', data.length, '门课程');
+    return data;
+  } catch (err) {
+    console.error('[REST] courses 查询异常:', err.message);
+    return null;
+  }
+}
 
 /**
  * 获取 Supabase 客户端实例（单例）
@@ -26,6 +56,8 @@ export async function getSupabase() {
     return null;
   }
   try {
+    // 静态导入 SDK（修复运行时找不到模块的问题）
+    const { createClient } = await import('@supabase/supabase-js');
     supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
@@ -34,12 +66,6 @@ export async function getSupabase() {
       },
     });
     console.log('[Supabase] 已连接');
-    // 调试：测试第一个查询
-    supabase.from('courses').select('id', { count: 'exact', head: true }).limit(1)
-      .then(({ data, error }) => {
-        if (error) console.error('[Supabase] 测试查询失败:', error);
-        else console.log('[Supabase] 测试查询成功，行数:', data);
-      }).catch(err => console.error('[Supabase] 测试查询异常:', err));
     return supabase;
   } catch (err) {
     console.warn('[Supabase] 创建客户端失败:', err.message);

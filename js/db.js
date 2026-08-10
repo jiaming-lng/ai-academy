@@ -143,6 +143,11 @@ export async function dbSignInWithOAuth(provider, redirectTo) {
 // 课程模块
 // ============================================================
 export async function dbGetCourses() {
+  // 优先用直接 REST API（避免 SDK Header 报错问题）
+  const { fetchCoursesREST } = await import('./supabase.js');
+  const rest = await fetchCoursesREST();
+  if (rest && rest.length > 0) return rest;
+  // 降级到 SDK
   const sb = await getSupabase();
   if (sb) {
     const { data, error } = await sb.from('courses').select('*').eq('status', 'published').order('sort_order');
