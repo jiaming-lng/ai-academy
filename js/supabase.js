@@ -2,9 +2,6 @@
  * Supabase 客户端模块
  * 使用 Vite 环境变量 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY
  * 本地开发时创建 .env 文件，部署时在平台配置环境变量
- *
- * 采用懒加载：仅当环境变量配置时才动态 import SDK，
- * 离线模式下无需安装 @supabase/supabase-js 即可正常运行。
  */
 
 // fallback hardcoded values for production deployment
@@ -14,11 +11,13 @@ const _fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || _fallbackUrl;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || _fallbackKey;
 
+// 静态导入 SDK（修复运行时找不到模块的问题）
+import { createClient } from '@supabase/supabase-js';
+
 let supabase = null;
 
 /**
  * 获取 Supabase 客户端实例（单例）
- * 如果环境变量未配置，返回 null（允许前端在离线模式运行）
  */
 export async function getSupabase() {
   if (supabase) return supabase;
@@ -27,7 +26,6 @@ export async function getSupabase() {
     return null;
   }
   try {
-    const { createClient } = await import('@supabase/supabase-js');
     supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
@@ -38,7 +36,7 @@ export async function getSupabase() {
     console.log('[Supabase] 已连接');
     return supabase;
   } catch (err) {
-    console.warn('[Supabase] SDK 未安装，使用离线模式:', err.message);
+    console.warn('[Supabase] 创建客户端失败:', err.message);
     return null;
   }
 }
