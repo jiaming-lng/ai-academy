@@ -163,7 +163,8 @@ export async function dbSignInWithOAuth(provider, redirectTo) {
 // 课程模块
 // ============================================================
 export async function dbGetCourses() {
-  // 优先用直接 REST API（避免 SDK Header 报错问题）
+  // BUILD-MARKER-20260810B — force GitHub Pages CDN cache invalidation
+  console.log('[ai-academy] dbGetCourses v20260810B using REST');
   const { fetchCoursesREST } = await import('./supabase.js');
   const rest = await fetchCoursesREST();
   if (rest && rest.length > 0) return rest;
