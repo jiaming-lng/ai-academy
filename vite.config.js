@@ -48,8 +48,7 @@ export default defineConfig({
     // 目标浏览器：现代浏览器即可
     target: 'es2020',
     rollupOptions: {
-      // Supabase SDK 通过动态 import() 按需加载，未安装时不阻塞构建
-      external: ['@supabase/supabase-js'],
+      // Supabase SDK 静态导入后需要打包到 bundle 中，不能 external
       input: {
         main: 'index.html',
         courses: 'courses.html',
