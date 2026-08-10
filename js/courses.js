@@ -1,18 +1,45 @@
 // ============================================================
 // courses.js — 课程列表动态渲染 + 搜索筛选 (Phase 4)
 // 替换 courses.html 中硬编码的课程卡片
-// 依赖: courses.data.js, icons.js, logger.js
+// 依赖: db.js (Supabase/localStorage), icons.js, logger.js
 // ============================================================
 
-import { courses } from './config/courses.data.js';
+import { dbGetCourses } from './db.js';
 import { Icons } from './icons.js';
 import { logger } from './logger.js';
 import { escapeHtml } from './utils.js';
 
 /**
+ * 将数据库/硬编码字段统一映射为前端渲染所需字段
+ * 兼容 snake_case (DB) 和 camelCase (本地数据)
+ */
+function normalizeCourse(c) {
+  return {
+    id: c.id,
+    title: c.title,
+    difficulty: c.level || c.difficulty || 'beginner',
+    difficultyLabel: (() => {
+      const level = c.level || c.difficulty;
+      if (level === 'beginner') return '入门';
+      if (level === 'intermediate') return '进阶';
+      if (level === 'advanced') return '高级';
+      return c.difficultyLabel || level || '入门';
+    })(),
+    weeks: c.weeks || Math.ceil((c.duration_hours || 24) / 3),
+    lessons: c.lessons || c.lessons_count || 0,
+    icon: c.icon || 'book',
+    iconColor: c.icon_color || c.iconColor || '#6B8AFF',
+    gradientFrom: c.gradientFrom || c.gradient_from || 'var(--color-primary-soft)',
+    gradientTo: c.gradientTo || c.gradient_to || '#E8EEFF',
+    summary: c.summary || c.subtitle || (c.description || '').slice(0, 80),
+  };
+}
+
+/**
  * 创建单个课程卡片 HTML
  */
-function createCourseCard(course) {
+function createCourseCard(rawCourse) {
+  const course = normalizeCourse(rawCourse);
   const { id, title, difficultyLabel, weeks, lessons, icon, iconColor, gradientFrom, gradientTo, summary } = course;
 
   return `
@@ -47,11 +74,13 @@ function createEmptyState() {
 /**
  * 渲染所有课程卡片
  */
-function renderCourses(filter = 'all', keyword = '') {
+async function renderCourses(filter = 'all', keyword = '') {
   const grid = document.getElementById('coursesGrid');
   if (!grid) return;
 
-  let filtered = courses;
+  const allCourses = await dbGetCourses();
+  const normalized = allCourses.map(normalizeCourse);
+  let filtered = normalized;
 
   if (filter !== 'all') {
     filtered = filtered.filter((c) => c.difficulty === filter);
@@ -69,7 +98,6 @@ function renderCourses(filter = 'all', keyword = '') {
 
   if (filtered.length === 0) {
     grid.innerHTML = createEmptyState();
-    // 渲染空状态图标
     Icons.renderAll();
     return;
   }
@@ -102,32 +130,31 @@ function setupSearchAndFilter() {
     renderCourses(currentFilter, keyword);
   }
 
-  searchInput.addEventListener('input', applyFilters);
+  searchInput.addEventListener('input', () => applyFilters());
 
   if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
+    clearBtn.addEventListener('click', async () => {
       searchInput.value = '';
       clearBtn.style.display = 'none';
-      renderCourses(currentFilter, '');
+      await renderCourses(currentFilter, '');
       searchInput.focus();
     });
   }
 
   filterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       filterBtns.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       currentFilter = btn.dataset.filter;
-      applyFilters();
+      await applyFilters();
     });
   });
 
-  // 初始渲染图标
   Icons.renderAll();
 }
 
-export function initCoursesPage() {
+export async function initCoursesPage() {
   logger.info('初始化课程列表页');
-  renderCourses();
+  await renderCourses();
   setupSearchAndFilter();
 }
