@@ -7,8 +7,12 @@
  * 离线模式下无需安装 @supabase/supabase-js 即可正常运行。
  */
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// fallback hardcoded values for production deployment
+const _fallbackUrl = 'https://baoanljnpmorqsucqxud.supabase.co';
+const _fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhb2FubGpucG1vcnFzdWNxeHVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MzM0MzksImV4cCI6MjEwMTQwOTQzOX0.f_zpPTcBVZHnPTmXgmWFl3aZswjYJOK9uCTsePKWjs0';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || _fallbackUrl;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || _fallbackKey;
 
 let supabase = null;
 
