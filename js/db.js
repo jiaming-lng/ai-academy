@@ -19,15 +19,19 @@ function storageSet(key, val) {
 // Auth 模块
 // ============================================================
 export async function dbSignUp(email, password, name) {
-  const sb = await getSupabase();
-  if (sb) {
-    const { data, error } = await sb.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: name } },
-    });
-    if (error) throw error;
+  // 优先 REST API
+  try {
+    const { authSignUp } = await import('./supabase.js');
+    const data = await authSignUp(email, password, name);
+    if (data.user) {
+      localStorage.setItem('ai_academy_current_user', JSON.stringify({
+        id: data.user.id, email: data.user.email, name
+      }));
+    }
     return data;
+  } catch (restErr) {
+    // 回落到 localStorage
+    console.warn('[dbSignUp] REST failed, fallback:', restErr.message);
   }
   // Offline fallback
   const users = storageGet('ai_academy_users') || {};
@@ -42,11 +46,27 @@ export async function dbSignUp(email, password, name) {
 }
 
 export async function dbSignIn(email, password) {
-  const sb = await getSupabase();
-  if (sb) {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+  // 优先 REST API
+  try {
+    const { authSignIn } = await import('./supabase.js');
+    const data = await authSignIn(email, password);
+    if (data.user) {
+      localStorage.setItem('ai_academy_current_user', JSON.stringify({
+        id: data.user.id, email: data.user.email, name: data.user.user_metadata?.full_name || email.split('@')[0]
+      }));
+    }
     return data;
+  } catch (restErr) {
+    // 回落到 localStorage
+    const users = storageGet('ai_academy_users') || {};
+    const user = users[email];
+    if (!user) throw restErr;
+    const encoder = new TextEncoder();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password + email));
+    const hash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    if (hash !== user.passwordHash) throw new Error('密码错误');
+    localStorage.setItem('ai_academy_current_user', JSON.stringify({ email, name: user.name }));
+    return { user: { email, user_metadata: { full_name: user.name } } };
   }
   // Offline fallback
   const users = storageGet('ai_academy_users') || {};
@@ -61,20 +81,20 @@ export async function dbSignIn(email, password) {
 }
 
 export async function dbSignOut() {
-  const sb = await getSupabase();
-  if (sb) { await sb.auth.signOut(); }
+  try {
+    const { authSignOut } = await import('./supabase.js');
+    await authSignOut();
+  } catch { /* noop */ }
   localStorage.removeItem('ai_academy_current_user');
 }
 
 export async function dbGetCurrentUser() {
-  const sb = await getSupabase();
-  if (sb) {
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) return null;
-    // Fetch profile for additional fields
-    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
-    return { ...user, profile };
-  }
+  // 优先 REST API
+  try {
+    const { authGetUser } = await import('./supabase.js');
+    const user = await authGetUser();
+    if (user) return user;
+  } catch { /* fallback */ }
   // Offline fallback
   const stored = localStorage.getItem('ai_academy_current_user');
   return stored ? JSON.parse(stored) : null;

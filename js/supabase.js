@@ -82,6 +82,88 @@ export async function fetchCurrentUserREST() {
   }
 }
 
+/**
+ * Supabase Auth REST API 封装
+ */
+export async function authSignUp(email, password, name) {
+  try {
+    const res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+      method: 'POST',
+      headers: baseHeaders,
+      body: JSON.stringify({
+        email,
+        password,
+        options: { data: { full_name: name } },
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error_description || err.msg || '注册失败');
+    }
+    const data = await res.json();
+    // 保存 session
+    if (data.access_token) {
+      localStorage.setItem('sb-baoanljnpmorqsucqxud-auth-token', JSON.stringify(data));
+    }
+    return data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function authSignIn(email, password) {
+  try {
+    const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: baseHeaders,
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error_description || err.msg || '登录失败');
+    }
+    const data = await res.json();
+    if (data.access_token) {
+      localStorage.setItem('sb-baoanljnpmorqsucqxud-auth-token', JSON.stringify(data));
+    }
+    return data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function authSignOut() {
+  localStorage.removeItem('sb-baoanljnpmorqsucqxud-auth-token');
+}
+
+export async function authGetUser() {
+  try {
+    const sessionRaw = localStorage.getItem('sb-baoanljnpmorqsucqxud-auth-token');
+    if (!sessionRaw) return null;
+    const session = JSON.parse(sessionRaw);
+    if (!session.access_token) return null;
+
+    const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + session.access_token,
+      },
+    });
+    if (!res.ok) return null;
+    const user = await res.json();
+    // 加载 profile
+    const profileRes = await fetch(
+      SUPABASE_URL + '/rest/v1/profiles?id=eq.' + encodeURIComponent(user.id) + '&select=*',
+      { method: 'GET', headers: baseHeaders }
+    );
+    const profiles = profileRes.ok ? await profileRes.json() : [];
+    return { ...user, profile: profiles[0] || null };
+  } catch {
+    return null;
+  }
+}
+
 // 旧 API 兼容（已废弃）
 export async function getSupabase() { return null; }
 export function getSupabaseSync() { return null; }
